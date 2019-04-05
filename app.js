@@ -5,8 +5,12 @@ const pug = require('pug');
 
 app.set('view engine', 'pug');
 
-app.get('/', (req, res) {
-	res.render('index')
+app.get('/', (req, res) => {
+	res.render('index.pug');
 });
+
+app.get('/event/:eventID', (req,res) => {
+	res.send(req.params.eventID);;
+})
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

@@ -7,6 +7,7 @@ head
 		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js')
 body
 	h1 Events
-	div.list-group
-		each val in [1,2,3,4,5]
-			a(href='#', class="list-group-item list-group-item-action list-group-item-primary")= "test" + val
+	div.container
+		div.list-group
+			each val in [0,1,2,3,4,5]
+				a(href='/event/' + val, class="list-group-item list-group-item-action list-group-item-success")= "test" + val
