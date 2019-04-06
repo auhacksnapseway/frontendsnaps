@@ -60,36 +60,30 @@ function displayEvents(res){
 }
 
 app.get('/event/:eventID', (req,res) => {
-	axios.get(apiurl + "api/events/" + req.params.eventID,{
-		headers: setheader()
-	}).then((response) => {
-		console.log(response)
-		if(response.status === 200){ 
-			try{ 
-				let event = response.data;
-				console.log(event);
-				let Ps = []
-				for(var x of event.users){
-					Ps.push(getUsername(x))
-				}
-				var drinks = {};
-				for(var user of event.users){
-					drinks[user] = 0
-				}
-				for(var x of event.drink_events){
-					drinks[x.user] += 1
-				}
-
-				Promise.all(Ps).then(names => {
-				res.render("event.pug", {event:event, names:names, drinks:drinks});
-				})
-
-			} 
-			catch(error){
-				console.log(error);
+	sendAuthorizedGetRequest("api/events/" + req.params.eventID).then(response => {
+		try{ 
+			let event = response.data;
+			console.log(event);
+			let Ps = []
+			for(var x of event.users){
+				Ps.push(getUsername(x))
+			}
+			var drinks = {};
+			for(var user of event.users){
+				drinks[user] = 0
+			}
+			for(var x of event.drink_events){
+				drinks[x.user] += 1
 			}
 
-		};
+			Promise.all(Ps).then(names => {
+				res.render("event.pug", {event:event, names:names, drinks:drinks});
+			})
+
+		} 
+		catch(error){
+			console.log(error);
+		}
 	});
 
 })
@@ -110,16 +104,16 @@ function login(uname, pass){
 		})
 	})
 }
-async function getUsername(id){
+function getUsername(id){
 	return new Promise((resolve,reject) => {
 		axios.get(apiurl + "api/users/"+ id + "/", {
 			headers: setheader()
 		}).then((response) => {
-		if(response.status === 200){ 
-			resolve(response.data.username)
+			if(response.status === 200){ 
+				resolve(response.data.username)
 			}
-		else
-			reject()
+			else
+				reject()
 		});
 	})
 }
