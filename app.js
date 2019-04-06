@@ -5,6 +5,9 @@ const pug = require('pug');
 const http = require('http');
 const apiurl = "http://snapsecounter.serveo.net/"
 const axios = require('axios')
+const bodyParser = require('body-parser')
+
+app.use(bodyParser.urlencoded())
 
 var logintoken = "";
 
@@ -87,6 +90,27 @@ app.get('/event/:eventID', (req,res) => {
 	});
 
 })
+
+app.get('/create_event', (req,res) => {
+	res.render('create_event.pug')
+})
+
+app.post('/create_event', (req, resu) =>{
+	console.log(req.body)
+	axios.post(apiurl + "api/events/", {
+		name : req.body.name
+	}, {
+		headers: setheader()
+	}).then((res) => {
+		if (res.status == 200) {
+			resu.redirect('/event/' + res.data.id)
+		} else {
+			console.error(res)
+		}
+	}, console.error)
+})
+
+
 
 function login(uname, pass){
 	return new Promise((resolve, reject) => {
