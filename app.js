@@ -122,6 +122,19 @@ app.get('/event/:eventID', (req,res) => {
 
 })
 
+app.get('/chart/:eventID', (req,res) => {
+	eventid = req.params.eventID;
+	user_data = {}
+	event_data = {}
+	sendAuthorizedGetRequest("api/users/").then(response => {
+		user_data = response;
+	})
+	sendAuthorizedGetRequest("api/event/" + eventid).then(response => {
+		event_data = response;
+	})
+	res.render('chart.pug', {be_userdata : user_data, be_eventdata: event_data});
+})
+
 app.get('/create_event', (req,res) => {
 	res.render('create_event.pug')
 })
@@ -141,6 +154,9 @@ app.post('/create_event', (req, resu) =>{
 	}, console.error)
 })
 
+function getUserData(uid) {
+	
+}
 
 
 function login(uname, pass){
