@@ -11,6 +11,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var logintoken = "";
+var username = "";
 
 function setheader() {
 	return {Authorization : "Token " + logintoken}
@@ -111,7 +112,7 @@ app.get('/event/:eventID', (req,res) => {
 			}
 
 			Promise.all(Ps).then(names => {
-				res.render("event.pug", {event:event, names:names, drinks:drinks});
+				res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(username)});
 			})
 
 		} 
@@ -120,6 +121,24 @@ app.get('/event/:eventID', (req,res) => {
 		}
 	});
 
+})
+
+app.get('/events/:eventID/drink', (req, res) => {
+	getUserID().then(userID => {
+	eventID = req.params.eventID
+	axios.post(apiurl + "api/drink_events/" ,{
+		event: eventID,
+		user: userID
+	},{
+		headers: setheader()
+}).then((resu) => {
+	if (resu.status == 201) {
+		res.redirect('/event/'+ eventID)
+	}else{
+		console.error(resu)
+	}
+	}, console.error)
+});
 })
 
 app.get('/chart/:eventID', (req,res) => {
@@ -172,7 +191,6 @@ app.get('/events/:eventID/join', (req, resu) =>{
 	}, console.error)
 })
 
-
 function login(uname, pass){
 	return new Promise((resolve, reject) => {
 		body = "{username : " + uname + ", password : " + pass + "}"
@@ -181,6 +199,7 @@ function login(uname, pass){
 			password : pass
 		}).then((res) => {
 			if (res.status == 200) {
+				username = uname
 				resolve(res.data.token);
 			} else {
 				reject("Error logging in");
@@ -213,5 +232,8 @@ function getUsername(id){
 	})
 }
 
+function getUserID(){
+	return sendAuthorizedGetRequest("api/users/me/").then((response) => response.data.id)
+}
 
 app.listen(port, () => console.log("Listening on port ${port}!"));
