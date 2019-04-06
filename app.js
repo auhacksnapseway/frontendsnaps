@@ -19,7 +19,7 @@ function setheader() {
 
 app.set('view engine', 'pug');
 
-app.get('/', (req, res) => {		
+app.get('/', (req, res) => {
 	if (!isLoggedIn()) {
 		res.redirect('/login')
 	} else {
@@ -58,7 +58,7 @@ app.post('/createaccount', (req, res) => {
 		console.log("Trying to create user...")
 		createuser(username, password).then((body) => res.redirect('/login'));
 	}
-	
+
 })
 
 function isLoggedIn(){
@@ -77,7 +77,7 @@ function sendAuthorizedGetRequest(url){
 				reject("Request not accepted");
 			}
 		}).catch((error) => console.log("We fucked up" + error));
-	})	
+	})
 }
 
 function displayEvents(res){
@@ -96,7 +96,7 @@ function displayEvents(res){
 
 app.get('/event/:eventID', (req,res) => {
 	sendAuthorizedGetRequest("api/events/" + req.params.eventID).then(response => {
-		try{ 
+		try{
 			let event = response.data;
 			console.log(event);
 			let Ps = []
@@ -112,10 +112,16 @@ app.get('/event/:eventID', (req,res) => {
 			}
 
 			Promise.all(Ps).then(names => {
+				let users = []
+				for(let i = 0; i < names.length; i++)
+				  users.push({id: event.users[i], name: names[i]})
+
+				users.sort((a, b) => drinks[b.id] - drinks[a.id])
+				event.users = users;
 				res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(username)});
 			})
 
-		} 
+		}
 		catch(error){
 			console.log(error);
 		}
@@ -174,7 +180,7 @@ app.post('/create_event', (req, resu) =>{
 })
 
 function getUserData(uid) {
-	
+
 }
 
 
@@ -233,7 +239,7 @@ function createuser(uname, pass){
 			console.log("CREATED USER!");
 			resolve(response.data);
 		})
-		
+
 	})
 }
 
