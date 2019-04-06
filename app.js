@@ -97,7 +97,7 @@ function displayEvents(res){
 
 
 app.get('/event/:eventID', (req,res) => {
-	sendAuthorizedGetRequest("api/events/" + req.params.eventID).then(response => {
+	sendAuthorizedGetRequest("api/events/" + req.params.eventID + "/").then(response => {
 		try{
 			let event = response.data;
 			console.log(event);
@@ -126,7 +126,7 @@ app.get('/event/:eventID', (req,res) => {
 
 				}
 				event.users = users;
-				res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(username)});
+				res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(username.toLowerCase())});
 			})
 
 		}
@@ -161,7 +161,7 @@ app.get('/chart/:eventID', (req,res) => {
 	let user_data = {}
 	let event_data = {}
 	Ps.push(sendAuthorizedGetRequest("api/users/"))
-	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid))
+	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid + "/"))
 		Promise.all(Ps).then((values) => {
 			user_data = JSON.stringify(values[0].data);
 			event_data = JSON.stringify(values[1].data)
@@ -178,7 +178,7 @@ app.get('/chartdata/:eventID', (req, res) => {
 	let user_data = {}
 	let event_data = {}
 	Ps.push(sendAuthorizedGetRequest("api/users/"))
-	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid))
+	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid + "/"))
 	Promise.all(Ps).then((values) => {
 		user_data = JSON.stringify(values[0].data);
 		event_data = JSON.stringify(values[1].data)
@@ -269,7 +269,7 @@ function createuser(uname, pass){
 function getUsername(id){
 	return new Promise((resolve,reject) => {
 		sendAuthorizedGetRequest("api/users/"+ id + "/").then((response) => {
-			resolve(response.data.username)
+			resolve(response.data.username.toLowerCase())
 		}).catch(error => {
 			reject();
 		});

@@ -10,10 +10,10 @@ body
 		h1=event.name
 		a.btn.btn-primary.btn-lg(type='button', href="/") Home
 		if isJoined
-			a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/drink") Cheers
-			a.btn.btn-danger.btn-lg(type='button', href="/events/" + event.id + "/leave") Leave
+			a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/drink/") Cheers
+			a.btn.btn-danger.btn-lg(type='button', href="/events/" + event.id + "/leave/") Leave
 		else
-			a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/join") Join
+			a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/join/") Join
 		if isOwner
 			button.btn.btn-dark(type='button') End event
 		table.table
