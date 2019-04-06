@@ -85,7 +85,6 @@ function displayEvents(res){
 	console.log("display events called")
 	sendAuthorizedGetRequest("api/events/").then((response) => {
 		let events = response.data;
-		console.log(events);
 		eventlist = [];
 		events.forEach((event) => {
 			eventlist.push(event);
@@ -98,41 +97,42 @@ function displayEvents(res){
 
 app.get('/event/:eventID', (req,res) => {
 	sendAuthorizedGetRequest("api/events/" + req.params.eventID + "/").then(response => {
-		try{
-			let event = response.data;
-			console.log(event);
-			let Ps = []
-			for(var x of event.users){
-				Ps.push(getUsername(x))
-			}
-			var drinks = {};
-			for(var user of event.users){
-				drinks[user] = 0
-			}
-			for(var x of event.drink_events){
-				drinks[x.user] += 1
-			}
-
-			Promise.all(Ps).then(names => {
-				let users = []
-				for(let i = 0; i < names.length; i++)
-				  users.push({id: event.users[i], name: names[i]})
-
-				users.sort((a, b) => drinks[b.id] - drinks[a.id])
-				if(users.length) {
-					users[0].place = 0;
-					for(var i = 1; i < users.length; i++)
-						users[i].place = drinks[users[i-1].id] == drinks[users[i].id] ? users[i-1].place : i;
-
+		getUserID().then(userId => {
+			try{
+				let event = response.data;
+				let Ps = []
+				for(var x of event.users){
+					Ps.push(getUsername(x))
 				}
-				event.users = users;
-				res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(username.toLowerCase())});
-			})
+				var drinks = {};
+				for(var user of event.users){
+					drinks[user] = 0
+				}
+				for(var x of event.drink_events){
+					drinks[x.user] += 1
+				}
 
-		}
-		catch(error){
-			console.log(error);
-		}
+				Promise.all(Ps).then(names => {
+					let users = []
+					for(let i = 0; i < names.length; i++)
+					  users.push({id: event.users[i], name: names[i]})
+
+					users.sort((a, b) => drinks[b.id] - drinks[a.id])
+					if(users.length) {
+						users[0].place = 0;
+						for(var i = 1; i < users.length; i++)
+							users[i].place = drinks[users[i-1].id] == drinks[users[i].id] ? users[i-1].place : i;
+
+					}
+					event.users = users;
+					res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(username.toLowerCase()), isOwner:userId == event.owner});
+				})
+
+			}
+			catch(error){
+				console.log(error);
+			}
+		});
 	});
 
 })
@@ -235,6 +235,19 @@ app.get('/events/:eventID/leave', (req, resu) =>{
 })
 
 
+app.get('/events/:eventID/stop', (req, resu) =>{
+	console.log(req.body)
+	axios.post(apiurl + "api/events/" + req.params.eventID + '/stop/', {},{
+		headers: setheader()
+	}).then((res) => {
+		if (res.status == 200) {
+			resu.redirect('/event/' + req.params.eventID)
+		} else {
+			console.error(res)
+		}
+	}, console.error)
+})
+
 function login(uname, pass){
 	return new Promise((resolve, reject) => {
 		body = "{username : " + uname + ", password : " + pass + "}"
@@ -267,17 +280,11 @@ function createuser(uname, pass){
 }
 
 function getUsername(id){
-	return new Promise((resolve,reject) => {
-		sendAuthorizedGetRequest("api/users/"+ id + "/").then((response) => {
-			resolve(response.data.username.toLowerCase())
-		}).catch(error => {
-			reject();
-		});
-	})
+	return sendAuthorizedGetRequest("api/users/"+ id + "/").then((response) => response.data.username.toLowerCase());
 }
 
 function getUserID(){
-	return sendAuthorizedGetRequest("api/users/me/").then((response) => response.data.id)
+	return sendAuthorizedGetRequest("api/users/me/").then((response) => response.data.id);
 }
 
 app.listen(port, () => console.log("Listening on port ${port}!"));
