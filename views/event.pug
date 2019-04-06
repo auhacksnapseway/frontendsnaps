@@ -1,0 +1,22 @@
+doctype html  
+html(lang='en')  
+head
+		title Lobby
+		link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css') 
+		script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js')
+body
+	h1 Event
+	div.container
+		table.table
+			thead
+				tr
+					th(scope="col")="#"
+					th(scope="col")="Name"
+					th(scope="col")="Number of drinks"
+			tbody
+				each user, index in event.users
+					tr
+						th(scope="row")=index
+						td=names[index]
+						td=drinks[user]
