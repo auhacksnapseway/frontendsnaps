@@ -8,6 +8,11 @@ head
 body
 	h1 Events
 	div.container
+		a.btn.btn-primary.btn-lg(type='button', href='/create_event') Create new event
 		div.list-group
 			each val in events
-				a(href='/event/' + val.id, class="list-group-item list-group-item-action list-group-item-success")= "test" + val.name
+				if val.end_datetime == null
+					a(href='/event/' + val.id, class="list-group-item list-group-item-action list-group-item-success")= val.name
+			each val in events	
+				if val.end_datetime != null
+					a(href='/event/' + val.id, class="list-group-item list-group-item-action list-group-item-danger")= val.name

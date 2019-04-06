@@ -12,6 +12,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var logintoken = "";
+var username = "";
 
 function setheader() {
 	return {Authorization : "Token " + logintoken}
@@ -19,7 +20,7 @@ function setheader() {
 
 app.set('view engine', 'pug');
 
-app.get('/', (req, res) => {		
+app.get('/', (req, res) => {
 	if (!isLoggedIn()) {
 		res.redirect('/login')
 	} else {
@@ -58,7 +59,7 @@ app.post('/createaccount', (req, res) => {
 		console.log("Trying to create user...")
 		createuser(username, password).then((body) => res.redirect('/login'));
 	}
-	
+
 })
 
 function isLoggedIn(){
@@ -77,7 +78,7 @@ function sendAuthorizedGetRequest(url){
 				reject("Request not accepted");
 			}
 		}).catch((error) => console.log("We fucked up" + error));
-	})	
+	})
 }
 
 function displayEvents(res){
@@ -97,7 +98,7 @@ function displayEvents(res){
 
 app.get('/event/:eventID', (req,res) => {
 	sendAuthorizedGetRequest("api/events/" + req.params.eventID).then(response => {
-		try{ 
+		try{
 			let event = response.data;
 			console.log(event);
 			let Ps = []
@@ -113,15 +114,39 @@ app.get('/event/:eventID', (req,res) => {
 			}
 
 			Promise.all(Ps).then(names => {
-				res.render("event.pug", {event:event, names:names, drinks:drinks});
+				let users = []
+				for(let i = 0; i < names.length; i++)
+				  users.push({id: event.users[i], name: names[i]})
+
+				users.sort((a, b) => drinks[b.id] - drinks[a.id])
+				event.users = users;
+				res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(username)});
 			})
 
-		} 
+		}
 		catch(error){
 			console.log(error);
 		}
 	});
 
+})
+
+app.get('/events/:eventID/drink', (req, res) => {
+	getUserID().then(userID => {
+	eventID = req.params.eventID
+	axios.post(apiurl + "api/drink_events/" ,{
+		event: eventID,
+		user: userID
+	},{
+		headers: setheader()
+}).then((resu) => {
+	if (resu.status == 201) {
+		res.redirect('/event/'+ eventID)
+	}else{
+		console.error(resu)
+	}
+	}, console.error)
+});
 })
 
 app.get('/chart/:eventID', (req,res) => {
@@ -176,10 +201,23 @@ app.post('/create_event', (req, resu) =>{
 	}, console.error)
 })
 
-
 app.get('/events/:eventID/join', (req, resu) =>{
 	console.log(req.body)
 	axios.post(apiurl + "api/events/" + req.params.eventID + '/join/', {},{
+		headers: setheader()
+	}).then((res) => {
+		if (res.status == 200) {
+			resu.redirect('/event/' + req.params.eventID)
+		} else {
+			console.error(res)
+		}
+	}, console.error)
+})
+
+
+app.get('/events/:eventID/leave', (req, resu) =>{
+	console.log(req.body)
+	axios.post(apiurl + "api/events/" + req.params.eventID + '/leave/', {},{
 		headers: setheader()
 	}).then((res) => {
 		if (res.status == 200) {
@@ -199,6 +237,7 @@ function login(uname, pass){
 			password : pass
 		}).then((res) => {
 			if (res.status == 200) {
+				username = uname
 				resolve(res.data.token);
 			} else {
 				reject("Error logging in");
@@ -217,7 +256,7 @@ function createuser(uname, pass){
 			console.log("CREATED USER!");
 			resolve(response.data);
 		})
-		
+
 	})
 }
 
@@ -231,5 +270,8 @@ function getUsername(id){
 	})
 }
 
+function getUserID(){
+	return sendAuthorizedGetRequest("api/users/me/").then((response) => response.data.id)
+}
 
 app.listen(port, () => console.log("Listening on port ${port}!"));
