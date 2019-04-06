@@ -10,4 +10,4 @@ body
 	div.container
 		div.list-group
 			each val in events
-				a(href='/event/' + val, class="list-group-item list-group-item-action list-group-item-success")= "test" + val
+				a(href='/event/' + val.id, class="list-group-item list-group-item-action list-group-item-success")= "test" + val.name
