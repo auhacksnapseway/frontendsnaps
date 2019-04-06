@@ -6,53 +6,57 @@ const http = require('http');
 const apiurl = "http://snapsecounter.serveo.net/"
 const axios = require('axios')
 
-var token = "";
+var logintoken = "";
 
 function setheader() {
-	return {Authorization : "Token " + token}
+	return {Authorization : "Token " + logintoken}
 }
 
 app.set('view engine', 'pug');
 
 app.get('/', (req, res) => {		
 	if (!isLoggedIn()) {
-		login("test", "test", res);
+		login("test","test").then((token) => {
+			logintoken = token;
+			displayEvents(res);
+			console.log("Token has been set")
+		})
 	} else {
 		displayEvents(res); // getEvents();
 	}
 });
 
 function isLoggedIn(){
-	return token != "";
+	return logintoken != "";
 }
 
-function sendAuthorizedGetRequest(url,onSuccess,onError){
+function sendAuthorizedGetRequest(url){
 	return new Promise((resolve, reject) => {
 		axios.get(apiurl + url, {
-			headers: setheader
+			headers: setheader()
 		}).then((response) => {
-			if (response.status == 200){
+			console.log("Got this far")
+			if (response.status === 200){
 				resolve(response);
 			} else {
 				reject("Request not accepted");
 			}
-		})
-
-
-
+		}).catch((error) => console.log("We fucked up" + error));
 	})	
 }
 
 function displayEvents(res){
-	sendAuthorizedGetRequest("api/events/", (response) => {
+	console.log("display events called")
+	sendAuthorizedGetRequest("api/events/").then((response) => {
 		let events = response.data;
+		console.log(events);
 		eventlist = [];
 		events.forEach((event) => {
 			eventlist.push(event);
 		})
 		res.render('index.pug',{events:eventlist});
 
-	}, (error) => console.log(error));
+	});
 }
 
 app.get('/event/:eventID', (req,res) => {
@@ -74,23 +78,21 @@ app.get('/event/:eventID', (req,res) => {
 
 })
 
-function login(uname, pass, loginres){
-	console.log("Started login")
-	body = "{username : " + uname + ", password : " + pass + "}"
-	axios.post(apiurl + "api-token-auth/",{
-		username : uname,
-		password : pass
-	})
-		.then((res) => {
+function login(uname, pass){
+	return new Promise((resolve, reject) => {
+		console.log("Started login")
+		body = "{username : " + uname + ", password : " + pass + "}"
+		axios.post(apiurl + "api-token-auth/", {
+			username : uname,
+			password : pass
+		}).then((res) => {
 			if (res.status == 200) {
-				console.log(res.data.token);
-				token = res.data.token;
-				loginres.redirect("/");
+				resolve(res.data.token);
+			} else {
+				reject("Error logging in");
 			}
 		})
-		.catch((err) => {
-			console.log(err);
-			loginres.redirect("/?err=login");
-		});
+	})
 }
+
 app.listen(port, () => console.log("Listening on port ${port}!"));
