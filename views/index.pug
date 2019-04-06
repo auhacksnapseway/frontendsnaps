@@ -9,5 +9,5 @@ body
 	h1 Events
 	div.container
 		div.list-group
-			each val in [0,1,2,3,4,5]
+			each val in events
 				a(href='/event/' + val, class="list-group-item list-group-item-action list-group-item-success")= "test" + val
