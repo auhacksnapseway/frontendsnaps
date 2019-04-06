@@ -8,8 +8,10 @@ head
 body
 	div.container
 		h1=event.name
+		a.btn.btn-primary.btn-lg(type='button', href="/") Home
 		if isJoined
 			a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/drink") Cheers
+			a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/leave") Leave
 		else
 			a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/join") Join
 		table.table
