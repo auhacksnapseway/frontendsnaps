@@ -6,8 +6,9 @@ head
 		script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js')
 		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js')
 body
-	h1=event.name
 	div.container
+		h1=event.name
+		a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/join") Join
 		table.table
 			thead
 				tr
