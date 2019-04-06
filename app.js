@@ -6,6 +6,7 @@ const http = require('http');
 const apiurl = "http://snapsecounter.serveo.net/"
 const axios = require('axios')
 const bodyParser = require('body-parser')
+const JSON = require('circular-json')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -94,6 +95,7 @@ function displayEvents(res){
 	});
 }
 
+
 app.get('/event/:eventID', (req,res) => {
 	sendAuthorizedGetRequest("api/events/" + req.params.eventID).then(response => {
 		try{
@@ -149,15 +151,35 @@ app.get('/events/:eventID/drink', (req, res) => {
 
 app.get('/chart/:eventID', (req,res) => {
 	eventid = req.params.eventID;
-	user_data = {}
-	event_data = {}
-	sendAuthorizedGetRequest("api/users/").then(response => {
-		user_data = response;
+	let Ps = []
+	let user_data = {}
+	let event_data = {}
+	Ps.push(sendAuthorizedGetRequest("api/users/"))
+	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid))
+		Promise.all(Ps).then((values) => {
+			user_data = JSON.stringify(values[0].data);
+			event_data = JSON.stringify(values[1].data)
+			console.log(user_data);
+			console.log(event_data);
+			res.render('chart2.pug', {be_userdata : user_data, be_eventdata: event_data});
+		})
+})
+
+
+app.get('/chartdata/:eventID', (req, res) => {
+	eventid = req.params.eventID;
+	let Ps = []
+	let user_data = {}
+	let event_data = {}
+	Ps.push(sendAuthorizedGetRequest("api/users/"))
+	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid))
+	Promise.all(Ps).then((values) => {
+		user_data = JSON.stringify(values[0].data);
+		event_data = JSON.stringify(values[1].data)
+		data = [user_data, event_data]
+		res.json(data)
 	})
-	sendAuthorizedGetRequest("api/event/" + eventid).then(response => {
-		event_data = response;
-	})
-	res.render('chart.pug', {be_userdata : user_data, be_eventdata: event_data});
+
 })
 
 app.get('/create_event', (req,res) => {
@@ -178,11 +200,6 @@ app.post('/create_event', (req, resu) =>{
 		}
 	}, console.error)
 })
-
-function getUserData(uid) {
-
-}
-
 
 app.get('/events/:eventID/join', (req, resu) =>{
 	console.log(req.body)
