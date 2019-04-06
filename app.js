@@ -66,8 +66,24 @@ app.get('/event/:eventID', (req,res) => {
 		console.log(response)
 		if(response.status === 200){ 
 			try{ 
-				let events = response.data;
-				res.send(JSON.stringify(events));
+				let event = response.data;
+				console.log(event);
+				let Ps = []
+				for(var x of event.users){
+					Ps.push(getUsername(x))
+				}
+				var drinks = {};
+				for(var user of event.users){
+					drinks[user] = 0
+				}
+				for(var x of event.drink_events){
+					drinks[x.user] += 1
+				}
+
+				Promise.all(Ps).then(names => {
+				res.render("event.pug", {event:event, names:names, drinks:drinks});
+				})
+
 			} 
 			catch(error){
 				console.log(error);
@@ -94,5 +110,19 @@ function login(uname, pass){
 		})
 	})
 }
+async function getUsername(id){
+	return new Promise((resolve,reject) => {
+		axios.get(apiurl + "api/users/"+ id + "/", {
+			headers: setheader()
+		}).then((response) => {
+		if(response.status === 200){ 
+			resolve(response.data.username)
+			}
+		else
+			reject()
+		});
+	})
+}
+
 
 app.listen(port, () => console.log("Listening on port ${port}!"));
