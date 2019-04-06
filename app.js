@@ -119,6 +119,12 @@ app.get('/event/:eventID', (req,res) => {
 				  users.push({id: event.users[i], name: names[i]})
 
 				users.sort((a, b) => drinks[b.id] - drinks[a.id])
+				if(users.length) {
+					users[0].place = 0;
+					for(var i = 1; i < users.length; i++)
+						users[i].place = drinks[users[i-1].id] == drinks[users[i].id] ? users[i-1].place : i;
+
+				}
 				event.users = users;
 				res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(username)});
 			})
