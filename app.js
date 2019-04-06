@@ -132,13 +132,13 @@ app.get('/event/:eventID', (req,res) => {
 app.get('/events/:eventID/drink', (req, res) => {
 	getUserID().then(userID => {
 	eventID = req.params.eventID
-	axios.post(apiurl + "api/drink_events/" ,{
+	axios.post(apiurl + "api/events/" + eventID +  "/create_drinkevent/" ,{
 		event: eventID,
 		user: userID
 	},{
 		headers: setheader()
 }).then((resu) => {
-	if (resu.status == 201) {
+	if (resu.status == 200) {
 		res.redirect('/event/'+ eventID)
 	}else{
 		console.error(resu)
