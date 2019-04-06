@@ -33,9 +33,8 @@ app.get('/event/:eventID', (req,res) => {
 		console.log(response)
 		if(response.status === 200){ 
 			try{ 
-
-				let profile = JSON.parse(body);
-				res.send(JSON.stringify(profile));
+				let events = response.data;
+				res.send(JSON.stringify(events));
 			} 
 			catch(error){
 				console.log(error);
