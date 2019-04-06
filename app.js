@@ -30,7 +30,7 @@ app.get('/event/:eventID', (req,res) => {
 	axios.get(apiurl + "api/events/",{
 		headers: setheader()
 	}).then((response) => {
-		console.log(response.body)
+		console.log(response)
 		if(response.status === 200){ 
 			try{ 
 
