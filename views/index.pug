@@ -3,11 +3,12 @@ html(lang='en')
 head
 		title Lobby
 		link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css') 
+		link(rel='stylesheet', href="../styles/styles.css")
 		script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js')
 		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js')
 body
-	h1 Events
 	div.container
+		h1.center Events
 		a.btn.btn-primary.btn-lg(type='button', href='/create_event') Create new event
 		div.list-group
 			each val in events
