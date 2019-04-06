@@ -27,7 +27,7 @@ function isLoggedIn(){
 }
 
 app.get('/event/:eventID', (req,res) => {
-	axios.get(apiurl + "api/events/",{
+	axios.get(apiurl + "api/events/" + req.params.eventID,{
 		headers: setheader()
 	}).then((response) => {
 		console.log(response)
