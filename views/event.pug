@@ -14,6 +14,8 @@ body
 			a.btn.btn-danger.btn-lg(type='button', href="/events/" + event.id + "/leave") Leave
 		else
 			a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/join") Join
+		if isOwner
+			button.btn.btn-dark(type='button') End event
 		table.table
 			thead
 				tr
@@ -21,9 +23,9 @@ body
 					th(scope="col")="Name"
 					th(scope="col")="Number of drinks"
 			tbody
-				each user, index in event.users
+				each user in event.users
 					tr
-						th(scope="row")=index
+						th(scope="row")=user.place
 						td=user.name
 							td=drinks[user.id]
 		div.embed-responsive.embed-responsive-16by9
