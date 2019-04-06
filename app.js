@@ -6,7 +6,6 @@ const http = require('http');
 const apiurl = "http://snapsecounter.serveo.net/"
 const axios = require('axios')
 
-
 var token = "";
 
 function setheader() {
@@ -18,12 +17,42 @@ app.set('view engine', 'pug');
 app.get('/', (req, res) => {		
 	if (!isLoggedIn()) {
 		login("test", "test", res);
+	} else {
+		displayEvents(res); // getEvents();
 	}
-	res.render('index.pug',{events:[1,2,3,4]});
 });
 
 function isLoggedIn(){
 	return token != "";
+}
+
+function sendAuthorizedGetRequest(url,onSuccess,onError){
+	return new Promise((resolve, reject) => {
+		axios.get(apiurl + url, {
+			headers: setheader
+		}).then((response) => {
+			if (response.status == 200){
+				resolve(response);
+			} else {
+				reject("Request not accepted");
+			}
+		})
+
+
+
+	})	
+}
+
+function displayEvents(res){
+	sendAuthorizedGetRequest("api/events/", (response) => {
+		let events = response.data;
+		eventlist = [];
+		events.forEach((event) => {
+			eventlist.push(event);
+		})
+		res.render('index.pug',{events:eventlist});
+
+	}, (error) => console.log(error));
 }
 
 app.get('/event/:eventID', (req,res) => {
@@ -45,17 +74,6 @@ app.get('/event/:eventID', (req,res) => {
 
 })
 
-
-
-
-let request = http.get(apiurl + "api/events/", function(response){
-	let body = ""; 
-	response.on("data", function(chunk){ body += chunk; });
-
-	response.on("end", function(){ 
-	});
-});
-
 function login(uname, pass, loginres){
 	console.log("Started login")
 	body = "{username : " + uname + ", password : " + pass + "}"
@@ -67,6 +85,7 @@ function login(uname, pass, loginres){
 			if (res.status == 200) {
 				console.log(res.data.token);
 				token = res.data.token;
+				loginres.redirect("/");
 			}
 		})
 		.catch((err) => {
