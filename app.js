@@ -159,6 +159,20 @@ function getUserData(uid) {
 }
 
 
+app.get('/events/:eventID/join', (req, resu) =>{
+	console.log(req.body)
+	axios.post(apiurl + "api/events/" + req.params.eventID + '/join/', {},{
+		headers: setheader()
+	}).then((res) => {
+		if (res.status == 200) {
+			resu.redirect('/event/' + req.params.eventID)
+		} else {
+			console.error(res)
+		}
+	}, console.error)
+})
+
+
 function login(uname, pass){
 	return new Promise((resolve, reject) => {
 		body = "{username : " + uname + ", password : " + pass + "}"
