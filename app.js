@@ -5,6 +5,10 @@ const pug = require('pug');
 const http = require('http');
 const apiurl = "http://snapsecounter.serveo.net/"
 const axios = require('axios')
+const bodyParser = require('body-parser')
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 var logintoken = "";
 
@@ -16,15 +20,45 @@ app.set('view engine', 'pug');
 
 app.get('/', (req, res) => {		
 	if (!isLoggedIn()) {
-		login("test","test").then((token) => {
-			logintoken = token;
-			displayEvents(res);
-			console.log("Token has been set")
-		})
+		res.redirect('/login')
 	} else {
 		displayEvents(res); // getEvents();
 	}
 });
+
+app.get('/login', (req, res) => {
+	res.render('login.pug');
+})
+
+app.post('/login', (req, res) => {
+	let username = req.body.username;
+	let password = req.body.password;
+	if (username != "" && password != "") {
+		login(username,password).then((token) => {
+			logintoken = token;
+			displayEvents(res);
+			console.log("Token has been set")
+		}).catch(error => {
+			res.redirect("/login?err=wrongpass");
+		})
+	} else {
+		res.redirect("/login?err=blankfield")
+	}
+});
+
+app.get('/createaccount', (req, res) => {
+	res.render('createaccount.pug');
+})
+
+app.post('/createaccount', (req, res) => {
+	let username = req.body.username;
+	let password = req.body.password;
+	if (username != "" && password != "") {
+		console.log("Trying to create user...")
+		createuser(username, password).then((body) => res.redirect('/login'));
+	}
+	
+})
 
 function isLoggedIn(){
 	return logintoken != "";
@@ -104,12 +138,26 @@ function login(uname, pass){
 	})
 }
 
+function createuser(uname, pass){
+	console.log(uname + pass)
+	return new Promise((resolve, reject) => {
+		axios.post(apiurl + "api/users/", {
+			username : uname,
+			password : pass
+		}).then((response) => {
+			console.log("CREATED USER!");
+			resolve(response.data);
+		})
+		
+	})
+}
+
 function getUsername(id){
 	return new Promise((resolve,reject) => {
 		sendAuthorizedGetRequest("api/users/"+ id + "/").then((response) => {
-		resolve(response.data.username)
+			resolve(response.data.username)
 		}).catch(error => {
-			reject()
+			reject();
 		});
 	})
 }
