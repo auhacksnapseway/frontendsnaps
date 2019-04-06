@@ -27,4 +27,6 @@ body
 					tr
 						th(scope="row")=user.place
 						td=user.name
-						td=drinks[user.id]
+							td=drinks[user.id]
+		div.embed-responsive.embed-responsive-16by9
+			iframe.embed-responsive-item(src="../chart/" + event.id)
