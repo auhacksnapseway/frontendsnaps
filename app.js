@@ -6,11 +6,12 @@ const http = require('http');
 const apiurl = "http://snapsecounter.serveo.net/"
 const axios = require('axios')
 
-function setheader(token) {
-	return {authorization : "Token " + token}
-}
 
 var token = "";
+
+function setheader() {
+	return {Authorization : "Token " + token}
+}
 
 app.set('view engine', 'pug');
 
@@ -26,21 +27,33 @@ function isLoggedIn(){
 }
 
 app.get('/event/:eventID', (req,res) => {
-	let request = http.get(apiurl + "api/events/", function(response){
-		let body = ""; 
-		response.on("data", function(chunk){ body += chunk; });
+	axios.get(apiurl + "api/events/",{
+		headers: setheader()
+	}).then((response) => {
+		console.log(response.body)
+		if(response.status === 200){ 
+			try{ 
 
-		response.on("end", function(){ 
-			if(response.statusCode === 200){ 
-				try{ var profile = JSON.parse(body);
-					res.send(JSON.stringify(profile));
-				} 
-				catch(error){
-					console.log(error);
-				}
+				let profile = JSON.parse(body);
+				res.send(JSON.stringify(profile));
+			} 
+			catch(error){
+				console.log(error);
+			}
 
-			};
-		});
+		};
+	});
+
+})
+
+
+
+
+let request = http.get(apiurl + "api/events/", function(response){
+	let body = ""; 
+	response.on("data", function(chunk){ body += chunk; });
+
+	response.on("end", function(){ 
 	});
 });
 
@@ -58,7 +71,8 @@ function login(uname, pass, loginres){
 			}
 		})
 		.catch((err) => {
-			loginres.redirect("/?err=login")
+			console.log(err);
+			loginres.redirect("/?err=login");
 		});
 }
 app.listen(port, () => console.log("Listening on port ${port}!"));
