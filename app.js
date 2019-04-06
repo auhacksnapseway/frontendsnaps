@@ -90,7 +90,6 @@ app.get('/event/:eventID', (req,res) => {
 
 function login(uname, pass){
 	return new Promise((resolve, reject) => {
-		console.log("Started login")
 		body = "{username : " + uname + ", password : " + pass + "}"
 		axios.post(apiurl + "api-token-auth/", {
 			username : uname,
@@ -104,16 +103,13 @@ function login(uname, pass){
 		})
 	})
 }
+
 function getUsername(id){
 	return new Promise((resolve,reject) => {
-		axios.get(apiurl + "api/users/"+ id + "/", {
-			headers: setheader()
-		}).then((response) => {
-			if(response.status === 200){ 
-				resolve(response.data.username)
-			}
-			else
-				reject()
+		sendAuthorizedGetRequest("api/users/"+ id + "/").then((response) => {
+		resolve(response.data.username)
+		}).catch(error => {
+			reject()
 		});
 	})
 }
