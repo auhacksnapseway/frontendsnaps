@@ -287,4 +287,4 @@ function getUserID(){
 	return sendAuthorizedGetRequest("api/users/me/").then((response) => response.data.id);
 }
 
-app.listen(port, () => console.log("Listening on port ${port}!"));
+app.listen(port, () => console.log("Listening on port " + port + "!"));
