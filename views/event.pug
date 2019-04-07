@@ -10,13 +10,13 @@ body
 	div.container
 		h1=event.name
 		a.btn.btn-primary.btn-lg(type='button', href="/") Home
-		if isJoined
-			a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/drink") Cheers
-			a.btn.btn-danger.btn-lg(type='button', href="/events/" + event.id + "/leave") Leave
+		if isJoined && event.end_datetime == null
+			a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/drink/") Cheers
+			a.btn.btn-danger.btn-lg(type='button', href="/events/" + event.id + "/leave/") Leave
 		else
-			a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/join") Join
-		if isOwner
-			button.btn.btn-dark(type='button') End event
+			a.btn.btn-primary.btn-lg(type='button', href="/events/" + event.id + "/join/") Join
+		if isOwner && event.end_datetime == null
+			a.btn.btn-danger.btn-lg(type='button', href="/events/" + event.id + "/stop/") End event
 		table.table
 			thead
 				tr
