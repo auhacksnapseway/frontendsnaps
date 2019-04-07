@@ -20,7 +20,7 @@ body
 			a.btn.btn-primary.btn-md(type='button', href="/events/" + event.id + "/join/") Join
 		if isOwner && event.end_datetime == null
 			a.btn.btn-danger.btn-md(type='button', href="/events/" + event.id + "/stop/") End event
-		table.table
+		table.table.table-striped
 			thead
 				tr
 					th(scope="col")="#"
