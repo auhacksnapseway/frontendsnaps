@@ -23,7 +23,7 @@ function setheader(req) {
 }
 
 function getID(req){
-	let id = `${req.headers["x-forwarded-for"]}_${req.headers["user-agent"]}_${req.headers["accept-language"]}`;
+	let id = `${req.connection.remoteAddress}_${req.headers["x-forwarded-for"]}_${req.headers["user-agent"]}_${req.headers["accept-language"]}`;
 	console.log(id);
 	return id;
 
