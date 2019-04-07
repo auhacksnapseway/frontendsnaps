@@ -294,7 +294,7 @@ function createuser(uname, pass){
 function getUsername(id, req){
 	return new Promise((resolve,reject) => {
 		sendAuthorizedGetRequest("api/users/"+ id + "/", req).then((response) => {
-			resolve(response.data.username)
+			resolve(response.data.username.toLowerCase())
 		}).catch(error => {
 			reject();
 		});
