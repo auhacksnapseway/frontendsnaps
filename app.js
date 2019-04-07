@@ -1,4 +1,5 @@
 const express = require('express');
+var cookieParser = require('cookie-parser');
 const app = express();
 const port = 3000;
 const pug = require('pug');
@@ -9,29 +10,22 @@ const bodyParser = require('body-parser')
 const JSON = require('circular-json')
 const fs = require('fs')
 
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'))
 app.set('view engine', 'pug');
 
-var logintokens = [];
 var username = "";
 
 function setheader(req) {
-	ip = getID(req)
-	return {Authorization : "Token " + logintokens[ip]}
+	console.log(req.cookies);
+	var token = req.cookies.token;
+	return {Authorization : "Token " + token}
 }
-
-function getID(req){
-	let id = `${req.connection.remoteAddress}_${req.headers["x-forwarded-for"]}_${req.headers["user-agent"]}_${req.headers["accept-language"]}`;
-	console.log(id);
-	return id;
-
-}
-
 
 app.get('/', (req, res) => {
-	if (!isLoggedIn(getID(req))) {
+	if (!isLoggedIn(req)) {
 		res.redirect('/login');
 	} else {
 		displayEvents(res, req); // getEvents();
@@ -55,8 +49,8 @@ app.post('/login', (req, res) => {
 	let password = req.body.password;
 	if (username != "" && password != "") {
 		login(username,password,res).then((token) => {
-			let ip = getID(req);
-			logintokens[ip] = token;
+			res.cookie('token', token);
+			req.cookies.token = token;
 			displayEvents(res, req);
 			console.log("Token has been set")
 		}).catch(error => {
@@ -68,8 +62,7 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-	let id = getID(req);
-	delete logintokens[id];
+	res.cookie('token', '');
 	res.redirect('/login');
 });
 
@@ -87,13 +80,8 @@ app.post('/createaccount', (req, res) => {
 
 })
 
-function isLoggedIn(id){
-	let loggedin = logintokens[id];
-	if (typeof loggedin !== 'undefined') {
-		return true;
-	} else {
-		return false;
-	}
+function isLoggedIn(req){
+	return typeof req.cookies.token === 'string' && req.cookies.token !== '';
 }
 
 function sendAuthorizedGetRequest(url, req){
