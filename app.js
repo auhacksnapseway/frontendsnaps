@@ -112,11 +112,10 @@ app.get('/events/:eventID/drink', (req, res) => {
 		},{
 			headers: setheader(req)
 		}).then((resu) => {
-			if (resu.status == 200) {
-				res.redirect('/event/'+ eventID)
-			}else{
-				console.error(resu)
-			}
+		  if (resu.status < 400)
+			console.error(resu)
+
+		  res.redirect('/event/'+ eventID)
 		}, console.error)
 	});
 })
