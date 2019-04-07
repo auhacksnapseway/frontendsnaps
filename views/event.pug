@@ -12,7 +12,7 @@ body
 		h1=event.name
 		a.btn.btn-primary.btn-md(type='button', href="/") Home
 		if isJoined && event.end_datetime == null
-			a.btn.btn-primary.btn-md(type='button', href="/events/" + event.id + "/drink/") Cheers
+			a.btn.btn-success.btn-md(type='button', href="/events/" + event.id + "/drink/") Cheers
 			a.btn.btn-danger.btn-md(type='button', href="/events/" + event.id + "/leave/") Leave
 		else
 			a.btn.btn-primary.btn-md(type='button', href="/events/" + event.id + "/join/") Join
