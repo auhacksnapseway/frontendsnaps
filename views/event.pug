@@ -44,15 +44,12 @@ body
 				tr
 					th(scope="row") Total Drinks
 					td=event.drink_events.length
-			tbody
 				tr
 					th(scope="row") Average Drinks
 					td=(event.drink_events.length / event.users.length).toFixed(3) 
-			tbody
 				tr
 					th(scope="row") Drinks/hour (total)
 					td=((event.drink_events.length)/(((new Date())-(new Date(event.start_datetime)))/(1000*60*60))).toFixed(3)
-			tbody
 				tr
 					th(scope="row") Average/hour (total)
 					td=((((event.drink_events.length)/(((new Date())-(new Date(event.start_datetime)))/(1000*60*60))))/(event.users.length)).toFixed(3)
