@@ -32,7 +32,29 @@ body
 						th(scope="row")=user.place
 						td=user.username
 						td=drinks[user.id]
-		div.container
-			p="Total: " + event.drink_events.length + ", Avg.: " + (event.drink_events.length / event.users.length).toFixed(3) + ", Avg./hr: " + ((event.drink_events.length)/(((new Date())-(new Date(event.start_datetime)))/(1000*60*60))).toFixed(3)
+
+		h2 Mad stats
+			
+		table.table.table-striped
+			thead
+				tr
+					th(scope="col")="MAD STATS"
+					th(scope="col")="Value"
+			tbody
+				tr
+					th(scope="row") Total Drinks
+					td=event.drink_events.length
+			tbody
+				tr
+					th(scope="row") Average Drinks
+					td=(event.drink_events.length / event.users.length).toFixed(3) 
+			tbody
+				tr
+					th(scope="row") Drinks/hour (total)
+					td=((event.drink_events.length)/(((new Date())-(new Date(event.start_datetime)))/(1000*60*60))).toFixed(3)
+			tbody
+				tr
+					th(scope="row") Average/hour (total)
+					td=((((event.drink_events.length)/(((new Date())-(new Date(event.start_datetime)))/(1000*60*60))))/(event.users.length)).toFixed(3)
 		div.embed-responsive.embed-responsive-16by9(style="cursor: pointer;", onclick="window.location.href='../chart/" + event.id + "?landscape'")
 			iframe.embed-responsive-item(src="../chart/" + event.id, style="pointer-events: none;")
