@@ -1,13 +1,14 @@
 var landscape = window.location.search.match(/landscape/);
-/*
+
 if (landscape) {
 	var chart_el = document.getElementById('chart');
+	/*
 	chart_el.style.top = '40px';
 	chart_el.style.position = 'absolute';
 	chart_el.style.left = '-15px';
+	*/
 	chart_el.style.transform = 'scale(0.9)';
 }
-*/
 
 var colors = ['006BA4', 'FF800E', 'ABABAB', '595959', '5F9ED1', 'C85200', '898989', 'A2C8EC', 'FFBC79', 'CFCFCF'];
 var event_no = window.location.pathname.split("/")[2];
