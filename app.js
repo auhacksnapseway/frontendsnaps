@@ -57,6 +57,12 @@ app.post('/login', (req, res) => {
 	}
 });
 
+app.get('/logout', (req, res) => {
+	let id = getID(req);
+	delete logintokens[id];
+	res.redirect('/login');
+});
+
 app.get('/createaccount', (req, res) => {
 	res.render('createaccount.pug');
 })
