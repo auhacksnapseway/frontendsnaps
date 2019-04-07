@@ -85,7 +85,6 @@ function sendAuthorizedGetRequest(url, req){
 		axios.get(apiurl + url, {
 			headers: setheader(req)
 		}).then((response) => {
-			console.log("Got this far")
 			if (response.status === 200){
 				resolve(response);
 			} else {
