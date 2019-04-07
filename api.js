@@ -34,7 +34,7 @@ function sendAuthorizedGetRequest(url, req){
 
 function getEvent(eventID, req) {
   return Promise.all([
-    sendAuthorizedGetRequest("api/events/" + eventID, req),
+    sendAuthorizedGetRequest("api/events/" + eventID + "/", req),
     sendAuthorizedGetRequest("api/users/", req)
   ]).then(res => {
     let event = res[0].data;
