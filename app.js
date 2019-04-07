@@ -16,8 +16,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'))
 app.set('view engine', 'pug');
 
-var username = "";
-
 function setheader(req) {
 	console.log(req.cookies);
 	var token = req.cookies.token;
@@ -145,8 +143,8 @@ app.get('/event/:eventID', (req,res) => {
 
 				}
 				event.users = users;
-				ownername = getUsername(event.owner, req).then((uname) => {
-					res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(username.toLowerCase()), isOwner:userId == event.owner, eventowner : uname, userId: userId});
+				getUsername(event.owner, req).then((uname) => {
+					res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(uname.toLowerCase()), isOwner:userId == event.owner, eventowner : uname, userId: userId});
 				})
 			})
 
