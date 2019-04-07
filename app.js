@@ -133,6 +133,22 @@ app.get('/chart/:eventID', (req,res) => {
 	})
 })
 
+app.get('/donut/:eventID', (req,res) => {
+	eventid = req.params.eventID;
+	let Ps = []
+	let user_data = {}
+	let event_data = {}
+	Ps.push(sendAuthorizedGetRequest("api/users/", req))
+	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid , req))
+	Promise.all(Ps).then((values) => {
+		user_data = JSON.stringify(values[0].data);
+		event_data = JSON.stringify(values[1].data)
+		console.log(user_data);
+		console.log(event_data);
+		res.render('donut.pug', {be_userdata : user_data, be_eventdata: event_data});
+	})
+})
+
 
 app.get('/chartdata/:eventID', (req, res) => {
 	eventid = req.params.eventID;

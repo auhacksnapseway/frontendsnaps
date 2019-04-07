@@ -38,20 +38,22 @@ body
 		table.table.table-striped
 			thead
 				tr
-					th(scope="col")="MAD STATS"
+					th(scope="col")="Drinks"
 					th(scope="col")="Value"
 			tbody
 				tr
-					th(scope="row") Total Drinks
+					th(scope="row") Total
 					td=event.drink_events.length
 				tr
-					th(scope="row") Average Drinks
+					th(scope="row") Average per Person
 					td=(event.drink_events.length / event.users.length).toFixed(3) 
 				tr
-					th(scope="row") Drinks/hour (total)
+					th(scope="row") Average per Hour
 					td=((event.drink_events.length)/(((new Date())-(new Date(event.start_datetime)))/(1000*60*60))).toFixed(3)
 				tr
-					th(scope="row") Average/hour (total)
+					th(scope="row") Average per Person per Hour
 					td=((((event.drink_events.length)/(((new Date())-(new Date(event.start_datetime)))/(1000*60*60))))/(event.users.length)).toFixed(3)
 		div.embed-responsive.embed-responsive-16by9(style="cursor: pointer;", onclick="window.location.href='../chart/" + event.id + "?landscape'")
 			iframe.embed-responsive-item(src="../chart/" + event.id, style="pointer-events: none;")
+		div.embed-responsive.embed-responsive-16by9(style="cursor: pointer;", onclick="window.location.href='../donut/" + event.id + "?landscape'")
+			iframe.embed-responsive-item(src="../donut/" + event.id, style="pointer-events: none;")
