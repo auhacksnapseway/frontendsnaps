@@ -16,7 +16,7 @@ body
 		if isJoined && event.end_datetime == null
 			a.btn.btn-success.btn-md(type='button', href="/events/" + event.id + "/drink/") Cheers
 			a.btn.btn-danger.btn-md(type='button', href="/events/" + event.id + "/leave/") Leave
-		else
+		else if event.end_datetime == null
 			a.btn.btn-primary.btn-md(type='button', href="/events/" + event.id + "/join/") Join
 		if isOwner && event.end_datetime == null
 			a.btn.btn-danger.btn-md(type='button', href="/events/" + event.id + "/stop/") End event
