@@ -28,7 +28,7 @@ body
 					th(scope="col")="Number of drinks"
 			tbody
 				each user in event.users
-					tr
+					tr(class=user.id === event.owner? "info": "")
 						th(scope="row")=user.place
 						td=user.name
 							td=drinks[user.id]
