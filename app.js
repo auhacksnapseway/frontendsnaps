@@ -10,21 +10,29 @@ const JSON = require('circular-json')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-var logintoken = "";
-var username = "";
-
-function setheader() {
-	return {Authorization : "Token " + logintoken}
-}
-
 app.set('view engine', 'pug');
 
+var logintokens = [];
+var username = "";
+
+function setheader(req) {
+	ip = getID(req)
+	return {Authorization : "Token " + logintokens[ip]}
+}
+
+function getID(req){
+	let ip = req.connection.remoteAddress;
+	console.log(ip);
+	return ip;
+
+}
+
+
 app.get('/', (req, res) => {
-	if (!isLoggedIn()) {
-		res.redirect('/login')
+	if (!isLoggedIn(getID(req))) {
+		res.redirect('/login');
 	} else {
-		displayEvents(res); // getEvents();
+		displayEvents(res, req); // getEvents();
 	}
 });
 
@@ -36,9 +44,10 @@ app.post('/login', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
 	if (username != "" && password != "") {
-		login(username,password).then((token) => {
-			logintoken = token;
-			displayEvents(res);
+		login(username,password,res).then((token) => {
+			let ip = getID(req);
+			logintokens[ip] = token;
+			displayEvents(res, req);
 			console.log("Token has been set")
 		}).catch(error => {
 			res.redirect("/login?err=wrongpass");
@@ -62,14 +71,19 @@ app.post('/createaccount', (req, res) => {
 
 })
 
-function isLoggedIn(){
-	return logintoken != "";
+function isLoggedIn(id){
+	let loggedin = logintokens[id];
+	if (typeof loggedin !== 'undefined') {
+		return true;
+	} else {
+		return false;
+	}
 }
 
-function sendAuthorizedGetRequest(url){
+function sendAuthorizedGetRequest(url, req){
 	return new Promise((resolve, reject) => {
 		axios.get(apiurl + url, {
-			headers: setheader()
+			headers: setheader(req)
 		}).then((response) => {
 			console.log("Got this far")
 			if (response.status === 200){
@@ -81,9 +95,9 @@ function sendAuthorizedGetRequest(url){
 	})
 }
 
-function displayEvents(res){
+function displayEvents(res, req){
 	console.log("display events called")
-	sendAuthorizedGetRequest("api/events/").then((response) => {
+	sendAuthorizedGetRequest("api/events/", req).then((response) => {
 		let events = response.data;
 		console.log(events);
 		eventlist = [];
@@ -97,13 +111,13 @@ function displayEvents(res){
 
 
 app.get('/event/:eventID', (req,res) => {
-	sendAuthorizedGetRequest("api/events/" + req.params.eventID).then(response => {
+	sendAuthorizedGetRequest("api/events/" + req.params.eventID, req).then(response => {
 		try{
 			let event = response.data;
 			console.log(event);
 			let Ps = []
 			for(var x of event.users){
-				Ps.push(getUsername(x))
+				Ps.push(getUsername(x, req))
 			}
 			var drinks = {};
 			for(var user of event.users){
@@ -138,7 +152,7 @@ app.get('/event/:eventID', (req,res) => {
 })
 
 app.get('/events/:eventID/drink', (req, res) => {
-	getUserID().then(userID => {
+	getUserID(req).then(userID => {
 	eventID = req.params.eventID
 	axios.post(apiurl + "api/events/" + eventID +  "/create_drinkevent/" ,{
 		event: eventID,
@@ -160,8 +174,8 @@ app.get('/chart/:eventID', (req,res) => {
 	let Ps = []
 	let user_data = {}
 	let event_data = {}
-	Ps.push(sendAuthorizedGetRequest("api/users/"))
-	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid))
+	Ps.push(sendAuthorizedGetRequest("api/users/", req))
+	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid , req))
 		Promise.all(Ps).then((values) => {
 			user_data = JSON.stringify(values[0].data);
 			event_data = JSON.stringify(values[1].data)
@@ -177,8 +191,8 @@ app.get('/chartdata/:eventID', (req, res) => {
 	let Ps = []
 	let user_data = {}
 	let event_data = {}
-	Ps.push(sendAuthorizedGetRequest("api/users/"))
-	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid))
+	Ps.push(sendAuthorizedGetRequest("api/users/", req))
+	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid, req))
 	Promise.all(Ps).then((values) => {
 		user_data = JSON.stringify(values[0].data);
 		event_data = JSON.stringify(values[1].data)
@@ -235,7 +249,7 @@ app.get('/events/:eventID/leave', (req, resu) =>{
 })
 
 
-function login(uname, pass){
+function login(uname, pass, res){
 	return new Promise((resolve, reject) => {
 		body = "{username : " + uname + ", password : " + pass + "}"
 		axios.post(apiurl + "api-token-auth/", {
@@ -248,7 +262,7 @@ function login(uname, pass){
 			} else {
 				reject("Error logging in");
 			}
-		})
+		}).catch((err) => res.redirect("/login"));
 	})
 }
 
@@ -266,9 +280,9 @@ function createuser(uname, pass){
 	})
 }
 
-function getUsername(id){
+function getUsername(id, req){
 	return new Promise((resolve,reject) => {
-		sendAuthorizedGetRequest("api/users/"+ id + "/").then((response) => {
+		sendAuthorizedGetRequest("api/users/"+ id + "/", req).then((response) => {
 			resolve(response.data.username)
 		}).catch(error => {
 			reject();
@@ -276,8 +290,8 @@ function getUsername(id){
 	})
 }
 
-function getUserID(){
-	return sendAuthorizedGetRequest("api/users/me/").then((response) => response.data.id)
+function getUserID(req){
+	return sendAuthorizedGetRequest("api/users/me/", req).then((response) => response.data.id)
 }
 
 app.listen(port, () => console.log("Listening on port ${port}!"));
