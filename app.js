@@ -7,9 +7,11 @@ const apiurl = "http://snapsecounter.serveo.net/"
 const axios = require('axios')
 const bodyParser = require('body-parser')
 const JSON = require('circular-json')
+const fs = require('fs')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public'))
 app.set('view engine', 'pug');
 
 var logintokens = [];
@@ -38,6 +40,14 @@ app.get('/', (req, res) => {
 
 app.get('/login', (req, res) => {
 	res.render('login.pug');
+})
+
+app.get('/styles/:file', (req, res) => {
+	file = req.params.file;
+	fs.readFile('../styles/' + file, 'utf8', function(err, contents) {
+		console.log(contents)
+		res.send(contents);
+	});
 })
 
 app.post('/login', (req, res) => {
