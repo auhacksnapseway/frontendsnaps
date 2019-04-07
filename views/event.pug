@@ -31,6 +31,6 @@ body
 					tr(class=user.id == userId? "info": "")
 						th(scope="row")=user.place
 						td=user.username
-							td=drinks[user.id]
+						td=drinks[user.id]
 		div.embed-responsive.embed-responsive-16by9(style="cursor: pointer;", onclick="window.location.href='../chart/" + event.id + "?landscape'")
 			iframe.embed-responsive-item(src="../chart/" + event.id, style="pointer-events: none;")
