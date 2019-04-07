@@ -9,7 +9,9 @@ head
 		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js')
 body
 	div.container
-		h1=event.name
+		h1(style="display:inline-block")=event.name  
+		h3(style="display:inline-block; margin-left: 2rem")="(" + eventowner + ")"
+		<br/>
 		a.btn.btn-primary.btn-md(type='button', href="/") Home
 		if isJoined && event.end_datetime == null
 			a.btn.btn-success.btn-md(type='button', href="/events/" + event.id + "/drink/") Cheers
