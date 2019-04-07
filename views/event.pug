@@ -9,14 +9,14 @@ head
 		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js')
 body
 	div.container
-		h1(style="display:inline-block")=event.name  
-		h3(style="display:inline-block; margin-left: 2rem")="(" + eventowner + ")"
+		h1(style="display:inline-block")=event.name
+		h3(style="display:inline-block; margin-left: 2rem")="(" + eventowner.username + ")"
 		<br/>
 		a.btn.btn-primary.btn-md(type='button', href="/") Home
 		if isJoined && event.end_datetime == null
 			a.btn.btn-success.btn-md(type='button', href="/events/" + event.id + "/drink/") Cheers
 			a.btn.btn-danger.btn-md(type='button', href="/events/" + event.id + "/leave/") Leave
-		else
+		else if event.end_datetime == null
 			a.btn.btn-primary.btn-md(type='button', href="/events/" + event.id + "/join/") Join
 		if isOwner && event.end_datetime == null
 			a.btn.btn-danger.btn-md(type='button', href="/events/" + event.id + "/stop/") End event
@@ -28,9 +28,9 @@ body
 					th(scope="col")="Number of drinks"
 			tbody
 				each user in event.users
-					tr(class=user.id === event.owner? "info": "")
+					tr(class=user.id == userId? "info": "")
 						th(scope="row")=user.place
-						td=user.name
-							td=drinks[user.id]
+						td=user.username
+						td=drinks[user.id]
 		div.embed-responsive.embed-responsive-16by9(style="cursor: pointer;", onclick="window.location.href='../chart/" + event.id + "?landscape'")
 			iframe.embed-responsive-item(src="../chart/" + event.id, style="pointer-events: none;")

@@ -10,19 +10,13 @@ const bodyParser = require('body-parser')
 const JSON = require('circular-json')
 const fs = require('fs')
 
+const {setheader, sendAuthorizedGetRequest, getID, logintokens, getEvent} = require('./api')
+
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'))
 app.set('view engine', 'pug');
-
-var username = "";
-
-function setheader(req) {
-	console.log(req.cookies);
-	var token = req.cookies.token;
-	return {Authorization : "Token " + token}
-}
 
 app.get('/', (req, res) => {
 	if (!isLoggedIn(req)) {
@@ -84,74 +78,27 @@ function isLoggedIn(req){
 	return typeof req.cookies.token === 'string' && req.cookies.token !== '';
 }
 
-function sendAuthorizedGetRequest(url, req){
-	return new Promise((resolve, reject) => {
-		axios.get(apiurl + url, {
-			headers: setheader(req)
-		}).then((response) => {
-			if (response.status === 200){
-				resolve(response);
-			} else {
-				reject("Request not accepted");
-			}
-		}).catch((error) => console.log("We fucked up" + error));
-	})
-}
-
 function displayEvents(res, req){
 	console.log("display events called")
 	sendAuthorizedGetRequest("api/events/", req).then((response) => {
-		let events = response.data;
-		eventlist = [];
-		events.forEach((event) => {
-			eventlist.push(event);
-		})
-		res.render('index.pug',{events:eventlist});
-
+		res.render('index.pug',{events:response.data});
 	});
 }
 
 
 app.get('/event/:eventID', (req,res) => {
-	sendAuthorizedGetRequest("api/events/" + req.params.eventID, req).then(response => {
-		getUserID(req).then(userId => {
-		try{
-			let event = response.data;
-			console.log(event);
-			let Ps = []
-			for(var x of event.users){
-				Ps.push(getUsername(x, req))
-			}
-			var drinks = {};
-			for(var user of event.users){
-				drinks[user] = 0
-			}
-			for(var x of event.drink_events){
-				drinks[x.user] += 1
-			}
-			Promise.all(Ps).then(names => {
-				let users = []
-				for(let i = 0; i < names.length; i++)
-					users.push({id: event.users[i], name: names[i]})
-
-				users.sort((a, b) => drinks[b.id] - drinks[a.id])
-				if(users.length) {
-					users[0].place = 0;
-					for(var i = 1; i < users.length; i++)
-						users[i].place = drinks[users[i-1].id] == drinks[users[i].id] ? users[i-1].place : i;
-
-				}
-				event.users = users;
-				ownername = getUsername(event.owner, req).then((uname) => {
-					res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(username.toLowerCase()), isOwner:userId == event.owner, eventowner : uname});
-				})
-			})
-
-		}
-		catch(error){
-			console.log(error);
-		}
-	})});
+  getUserID(req).then(userId => {
+	getEvent(req.params.eventID, req).then(data => {
+	  let {event, drinks, owner} = data;
+	  res.render("event.pug", {
+		event, drinks,
+		isJoined: event.users.some(u => u.id == userId),
+		isOwner: userId == event.owner,
+		eventowner: owner,
+		userId: userId
+	  });
+	});
+  });
 });
 
 app.get('/events/:eventID/drink', (req, res) => {
@@ -163,11 +110,10 @@ app.get('/events/:eventID/drink', (req, res) => {
 		},{
 			headers: setheader(req)
 		}).then((resu) => {
-			if (resu.status == 200) {
-				res.redirect('/event/'+ eventID)
-			}else{
-				console.error(resu)
-			}
+		  if (resu.status < 400)
+			console.error(resu)
+
+		  res.redirect('/event/'+ eventID)
 		}, console.error)
 	});
 })
