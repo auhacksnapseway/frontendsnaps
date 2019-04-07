@@ -94,7 +94,10 @@ function sendAuthorizedGetRequest(url, req){
 			} else {
 				reject("Request not accepted");
 			}
-		}).catch((error) => console.log("We fucked up" + error));
+		}).catch((error) => {
+			console.log("We fucked up " + error);
+			console.log("URL: " + url);
+		});
 	})
 }
 
