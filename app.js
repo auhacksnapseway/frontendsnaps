@@ -146,7 +146,7 @@ app.get('/event/:eventID', (req,res) => {
 				}
 				event.users = users;
 				ownername = getUsername(event.owner, req).then((uname) => {
-					res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(username.toLowerCase()), isOwner:userId == event.owner, eventowner : uname});
+					res.render("event.pug", {event:event, names:names, drinks:drinks, isJoined:names.includes(username.toLowerCase()), isOwner:userId == event.owner, eventowner : uname, userId: userId});
 				})
 			})
 
