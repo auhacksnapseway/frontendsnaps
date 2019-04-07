@@ -32,5 +32,7 @@ body
 						th(scope="row")=user.place
 						td=user.username
 						td=drinks[user.id]
+		div.container
+			p="Total: " + event.drink_events.length + ", Avg.: " + (event.drink_events.length / event.users.length).toFixed(3) + ", Avg./hr: " + ((event.drink_events.length)/(((new Date())-(new Date(event.start_datetime)))/(1000*60*60))).toFixed(3)
 		div.embed-responsive.embed-responsive-16by9(style="cursor: pointer;", onclick="window.location.href='../chart/" + event.id + "?landscape'")
 			iframe.embed-responsive-item(src="../chart/" + event.id, style="pointer-events: none;")
