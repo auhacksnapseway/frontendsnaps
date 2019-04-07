@@ -10,8 +10,9 @@ function getID(req){
 }
 
 function setheader(req) {
-	ip = getID(req)
-	return {Authorization : "Token " + logintokens[ip]}
+	console.log(req.cookies);
+	var token = req.cookies.token;
+	return {Authorization : "Token " + token}
 }
 
 function sendAuthorizedGetRequest(url, req){
@@ -24,7 +25,10 @@ function sendAuthorizedGetRequest(url, req){
 			} else {
 				reject("Request not accepted");
 			}
-		}).catch((error) => console.log("We fucked up" + error));
+		}).catch((error) => {
+			console.log("We fucked up " + error);
+			console.log("URL: " + url);
+		});
 	})
 }
 

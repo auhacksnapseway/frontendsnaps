@@ -19,7 +19,7 @@ body
 		else
 			a.btn.btn-primary.btn-md(type='button', href="/events/" + event.id + "/join/") Join
 		if isOwner && event.end_datetime == null
-			a.btn.btn-danger.btn-lg(type='button', href="/events/" + event.id + "/stop/") End event
+			a.btn.btn-danger.btn-md(type='button', href="/events/" + event.id + "/stop/") End event
 		table.table
 			thead
 				tr
@@ -28,7 +28,7 @@ body
 					th(scope="col")="Number of drinks"
 			tbody
 				each user in event.users
-					tr
+					tr(class=user.id == userId? "info": "")
 						th(scope="row")=user.place
 						td=user.username
 							td=drinks[user.id]
