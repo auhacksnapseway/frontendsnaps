@@ -21,9 +21,9 @@ function setheader(req) {
 }
 
 function getID(req){
-	let ip = req.connection.remoteAddress;
-	console.log(ip);
-	return ip;
+	let id = `${req.headers["x-forwarded-for"]}_${req.headers["user-agent"]}_${req.headers["accept-language"]}`;
+	console.log(id);
+	return id;
 
 }
 
@@ -155,7 +155,7 @@ app.get('/events/:eventID/drink', (req, res) => {
 			event: eventID,
 			user: userID
 		},{
-			headers: setheader()
+			headers: setheader(req)
 		}).then((resu) => {
 			if (resu.status == 200) {
 				res.redirect('/event/'+ eventID)
@@ -208,7 +208,7 @@ app.post('/create_event', (req, resu) =>{
 	axios.post(apiurl + "api/events/", {
 		name : req.body.name
 	}, {
-		headers: setheader()
+		headers: setheader(req)
 	}).then((res) => {
 		if (res.status == 200) {
 			resu.redirect('/event/' + res.data.id)
@@ -221,7 +221,7 @@ app.post('/create_event', (req, resu) =>{
 app.get('/events/:eventID/join', (req, resu) =>{
 	console.log(req.body)
 	axios.post(apiurl + "api/events/" + req.params.eventID + '/join/', {},{
-		headers: setheader()
+		headers: setheader(req)
 	}).then((res) => {
 		if (res.status == 200) {
 			resu.redirect('/event/' + req.params.eventID)
@@ -235,7 +235,7 @@ app.get('/events/:eventID/join', (req, resu) =>{
 app.get('/events/:eventID/leave', (req, resu) =>{
 	console.log(req.body)
 	axios.post(apiurl + "api/events/" + req.params.eventID + '/leave/', {},{
-		headers: setheader()
+		headers: setheader(req)
 	}).then((res) => {
 		if (res.status == 200) {
 			resu.redirect('/event/' + req.params.eventID)
@@ -249,7 +249,7 @@ app.get('/events/:eventID/leave', (req, resu) =>{
 app.get('/events/:eventID/stop', (req, resu) =>{
 	console.log(req.body)
 	axios.post(apiurl + "api/events/" + req.params.eventID + '/stop/', {},{
-		headers: setheader()
+		headers: setheader(req)
 	}).then((res) => {
 		if (res.status == 200) {
 			resu.redirect('/event/' + req.params.eventID)
