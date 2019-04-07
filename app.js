@@ -31,9 +31,8 @@ app.get('/login', (req, res) => {
 })
 
 app.get('/styles/:file', (req, res) => {
-	file = req.params.file;
-	fs.readFile('../styles/' + file, 'utf8', function(err, contents) {
-		console.log(contents)
+	fs.readFile('../styles/' + req.params.file, 'utf8', (err, contents) => {
+		if(err) console.error(err);
 		res.send(contents);
 	});
 })
@@ -239,16 +238,6 @@ function createuser(uname, pass){
 			resolve(response.data);
 		})
 
-	})
-}
-
-function getUsername(id, req){
-	return new Promise((resolve,reject) => {
-		sendAuthorizedGetRequest("api/users/"+ id + "/", req).then((response) => {
-			resolve(response.data.username.toLowerCase())
-		}).catch(error => {
-			reject();
-		});
 	})
 }
 
