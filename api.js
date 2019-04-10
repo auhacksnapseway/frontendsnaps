@@ -2,13 +2,6 @@ const apiurl = "https://snaps-api.dropud.nu/";
 const axios = require('axios');
 const logintokens = [];
 
-function getID(req){
-	let id = `${req.connection.remoteAddress}_${req.headers["x-forwarded-for"]}_${req.headers["user-agent"]}_${req.headers["accept-language"]}`;
-	console.log(id);
-	return id;
-
-}
-
 function setheader(req) {
 	var token = req.cookies.token;
 	if (token) {
@@ -82,6 +75,6 @@ function getEvent(eventID, req) {
 }
 
 
-module.exports = {apiurl, setheader, getID, sendAuthorizedGetRequest, logintokens,
+module.exports = {apiurl, setheader, sendAuthorizedGetRequest, logintokens,
   getEvent};
 

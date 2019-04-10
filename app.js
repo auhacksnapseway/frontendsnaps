@@ -8,7 +8,7 @@ const bodyParser = require('body-parser')
 const JSON = require('circular-json')
 const fs = require('fs')
 
-const {apiurl, setheader, sendAuthorizedGetRequest, getID, logintokens, getEvent} = require('./api')
+const {apiurl, setheader, sendAuthorizedGetRequest, logintokens, getEvent} = require('./api')
 
 app.use(cookieParser());
 app.use(bodyParser.json());
