@@ -288,7 +288,7 @@ if (args.production) {
 
 if (args.listen[0] === '/') {
 	try {
-		fs.unlinkSync(listen);
+		fs.unlinkSync(args.listen);
 	} catch(e) {}
 }
 
