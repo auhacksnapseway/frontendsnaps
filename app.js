@@ -263,7 +263,7 @@ var args = yargs
 		default: '3000',
 	})
 	.option('apiurl', {
-		default: 'https://snaps-api.dropud.nu/',
+		default: 'https://snaps.dropud.nu/',
 	}).argv;
 
 if (args.production) {
