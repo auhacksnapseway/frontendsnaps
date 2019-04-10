@@ -274,7 +274,7 @@ if (process.argv[2] === '--production') {
 } else {
 	console.log('Running in dev mode');
 
-	app.use('/static', express.static('public'))
+	app.use('/static', express.static('static'))
 	listen = 3000;
 }
 
