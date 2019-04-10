@@ -57,7 +57,7 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-	res.cookie('token', '');
+	res.clearCookie('token');
 	res.redirect('/login');
 });
 

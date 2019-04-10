@@ -10,9 +10,12 @@ function getID(req){
 }
 
 function setheader(req) {
-	console.log(req.cookies);
 	var token = req.cookies.token;
-	return {Authorization : "Token " + token}
+	if (token) {
+		return {Authorization : "Token " + token}
+	} else {
+		return {};
+	}
 }
 
 function sendAuthorizedGetRequest(url, req, res){
@@ -28,7 +31,7 @@ function sendAuthorizedGetRequest(url, req, res){
 		}).catch((error) => {
 			if (error.response.status === 403) {
 				// Forbidden
-				console.error('Got 403 Forbidden, redirecting to logout');
+				console.error(`Got 403 Forbidden from ${url}, redirecting to logout`);
 				res.redirect('/logout');
 			} else {
 				var message = `We fucked up: ${error}\nAPI URL: ${url}`;
