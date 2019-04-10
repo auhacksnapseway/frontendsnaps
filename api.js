@@ -1,4 +1,4 @@
-const apiurl = "http://snapsecounter.serveo.net/";
+const apiurl = "https://snaps-api.dropud.nu/";
 const axios = require('axios');
 const logintokens = [];
 
