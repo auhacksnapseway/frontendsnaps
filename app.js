@@ -26,7 +26,13 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-	res.render('login.pug');
+	var error = req.cookies.loginError;
+	if (error) {
+		res.clearCookie('loginError');
+	}
+	res.render('login.pug', {
+		error: error
+	});
 })
 
 app.get('/styles/:file', (req, res) => {
@@ -39,18 +45,15 @@ app.get('/styles/:file', (req, res) => {
 app.post('/login', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
-	if (username != "" && password != "") {
-		login(username,password,res).then((token) => {
-			res.cookie('token', token);
-			req.cookies.token = token;
-			displayEvents(res, req);
-			console.log("Token has been set")
-		}).catch(error => {
-			res.redirect("/login?err=wrongpass");
-		})
-	} else {
-		res.redirect("/login?err=blankfield")
-	}
+	login(username,password,res).then((token) => {
+		res.cookie('token', token);
+		req.cookies.token = token;
+		displayEvents(res, req);
+		console.log("Token has been set")
+	}).catch(error => {
+		res.cookie('loginError', 'Wrong username/password');
+		res.redirect("/login");
+	})
 });
 
 app.get('/logout', (req, res) => {
@@ -78,14 +81,14 @@ function isLoggedIn(req){
 
 function displayEvents(res, req){
 	console.log("display events called")
-	sendAuthorizedGetRequest("api/events/", req).then((response) => {
+	sendAuthorizedGetRequest("api/events/", req, res).then((response) => {
 		res.render('index.pug',{events:response.data});
 	});
 }
 
 
 app.get('/event/:eventID', (req,res) => {
-  getUserID(req).then(userId => {
+  getUserID(req, res).then(userId => {
 	getEvent(req.params.eventID, req).then(data => {
 	  let {event, drinks, owner} = data;
 	  res.render("event.pug", {
@@ -100,7 +103,7 @@ app.get('/event/:eventID', (req,res) => {
 });
 
 app.get('/events/:eventID/drink', (req, res) => {
-	getUserID(req).then(userID => {
+	getUserID(req, res).then(userID => {
 		eventID = req.params.eventID
 		axios.post(apiurl + "api/events/" + eventID +  "/create_drinkevent/" ,{
 			event: eventID,
@@ -121,8 +124,8 @@ app.get('/chart/:eventID', (req,res) => {
 	let Ps = []
 	let user_data = {}
 	let event_data = {}
-	Ps.push(sendAuthorizedGetRequest("api/users/", req))
-	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid , req))
+	Ps.push(sendAuthorizedGetRequest("api/users/", req, res))
+	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid , req, res))
 	Promise.all(Ps).then((values) => {
 		user_data = JSON.stringify(values[0].data);
 		event_data = JSON.stringify(values[1].data)
@@ -137,8 +140,8 @@ app.get('/donut/:eventID', (req,res) => {
 	let Ps = []
 	let user_data = {}
 	let event_data = {}
-	Ps.push(sendAuthorizedGetRequest("api/users/", req))
-	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid , req))
+	Ps.push(sendAuthorizedGetRequest("api/users/", req, res))
+	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid , req, res))
 	Promise.all(Ps).then((values) => {
 		user_data = JSON.stringify(values[0].data);
 		event_data = JSON.stringify(values[1].data)
@@ -154,8 +157,8 @@ app.get('/chartdata/:eventID', (req, res) => {
 	let Ps = []
 	let user_data = {}
 	let event_data = {}
-	Ps.push(sendAuthorizedGetRequest("api/users/", req))
-	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid, req))
+	Ps.push(sendAuthorizedGetRequest("api/users/", req, res))
+	Ps.push(sendAuthorizedGetRequest("api/events/" + eventid, req, res))
 	Promise.all(Ps).then((values) => {
 		user_data = JSON.stringify(values[0].data);
 		event_data = JSON.stringify(values[1].data)
@@ -238,7 +241,7 @@ function login(uname, pass, res){
 			} else {
 				reject("Error logging in");
 			}
-		}).catch((err) => res.redirect("/login"));
+		}).catch((err) => reject(err));
 	})
 }
 
@@ -256,8 +259,8 @@ function createuser(uname, pass){
 	})
 }
 
-function getUserID(req){
-	return sendAuthorizedGetRequest("api/users/me/", req).then((response) => response.data.id)
+function getUserID(req, res){
+	return sendAuthorizedGetRequest("api/users/me/", req, res).then((response) => response.data.id)
 }
 
 app.listen(port, () => console.log("Listening on port " + port + "!"));

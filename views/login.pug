@@ -30,6 +30,8 @@ head
     font-weight: bold;
     }
 .login-form
+  if error
+    div.alert.alert-danger=error
   form(action='/login' method='post')
     h2.text-center Log in
     .form-group

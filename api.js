@@ -15,7 +15,7 @@ function setheader(req) {
 	return {Authorization : "Token " + token}
 }
 
-function sendAuthorizedGetRequest(url, req){
+function sendAuthorizedGetRequest(url, req, res){
 	return new Promise((resolve, reject) => {
 		axios.get(apiurl + url, {
 			headers: setheader(req)
@@ -26,8 +26,15 @@ function sendAuthorizedGetRequest(url, req){
 				reject("Request not accepted");
 			}
 		}).catch((error) => {
-			console.log("We fucked up " + error);
-			console.log("URL: " + url);
+			if (error.response.status === 403) {
+				// Forbidden
+				console.error('Got 403 Forbidden, redirecting to logout');
+				res.redirect('/logout');
+			} else {
+				var message = `We fucked up: ${error}\nAPI URL: ${url}`;
+				console.error(message);
+				res.status(error.response.status).send(message);
+			}
 		});
 	})
 }
