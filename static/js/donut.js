@@ -68,9 +68,6 @@ function updategraph(user_data, event_data){
 		user_drinks[user_index]++;
 	}
 
-	console.log(user_indices);
-	console.log(user_data);
-
 	for (var i = 0; i < user_data.length; i++) {
 		var user = user_data[i];
 		var user_index = user_indices[user.id];
@@ -78,8 +75,6 @@ function updategraph(user_data, event_data){
 			dataset.data[user_index] = user_drinks[user_index];
 		}
 	}
-
-	console.log(dataset);
 
 	var ctx = document.getElementById('chart').getContext('2d');
 	var chart = new Chart(ctx, {

@@ -138,8 +138,6 @@ app.get('/chart/:eventID', (req,res) => {
 	Promise.all(Ps).then((values) => {
 		user_data = JSON.stringify(values[0].data);
 		event_data = JSON.stringify(values[1].data)
-		console.log(user_data);
-		console.log(event_data);
 		res.render('chart2.pug', {be_userdata : user_data, be_eventdata: event_data});
 	})
 })
@@ -154,8 +152,6 @@ app.get('/donut/:eventID', (req,res) => {
 	Promise.all(Ps).then((values) => {
 		user_data = JSON.stringify(values[0].data);
 		event_data = JSON.stringify(values[1].data)
-		console.log(user_data);
-		console.log(event_data);
 		res.render('donut.pug', {be_userdata : user_data, be_eventdata: event_data});
 	})
 })
@@ -182,7 +178,6 @@ app.get('/create_event', (req,res) => {
 })
 
 app.post('/create_event', (req, resu) =>{
-	console.log(req.body)
 	axios.post(apiurl + "api/events/", {
 		name : req.body.name
 	}, {
@@ -191,20 +186,19 @@ app.post('/create_event', (req, resu) =>{
 		if (res.status == 200) {
 			resu.redirect('/event/' + res.data.id)
 		} else {
-			console.error(res)
+			console.error(`Got error from create_event: ${res.status}`);
 		}
 	}, console.error)
 })
 
 app.get('/events/:eventID/join', (req, resu) =>{
-	console.log(req.body)
 	axios.post(apiurl + "api/events/" + req.params.eventID + '/join/', {},{
 		headers: setheader(req)
 	}).then((res) => {
 		if (res.status == 200) {
 			resu.redirect('/event/' + req.params.eventID)
 		} else {
-			console.error(res)
+			console.error(`Got error from join: ${res.status}`);
 		}
 	}, console.error)
 })
@@ -218,7 +212,7 @@ app.get('/events/:eventID/leave', (req, resu) =>{
 		if (res.status == 200) {
 			resu.redirect('/event/' + req.params.eventID)
 		} else {
-			console.error(res)
+			console.error(`Got error from leave: ${res.status}`);
 		}
 	}, console.error)
 })
@@ -232,7 +226,7 @@ app.get('/events/:eventID/stop', (req, resu) =>{
 		if (res.status == 200) {
 			resu.redirect('/event/' + req.params.eventID)
 		} else {
-			console.error(res)
+			console.error(`Got error from stop: ${res.status}`);
 		}
 	}, console.error)
 })
