@@ -1,6 +1,9 @@
-const apiurl = "https://snaps-api.dropud.nu/";
 const axios = require('axios');
-const logintokens = [];
+let apiurl;
+
+function setApiUrl(url) {
+	apiurl = url;
+}
 
 function setheader(req) {
 	var token = req.cookies.token;
@@ -74,7 +77,4 @@ function getEvent(eventID, req) {
   });
 }
 
-
-module.exports = {apiurl, setheader, sendAuthorizedGetRequest, logintokens,
-  getEvent};
-
+module.exports = {setheader, sendAuthorizedGetRequest, getEvent, setApiUrl};

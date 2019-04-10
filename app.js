@@ -9,7 +9,9 @@ const JSON = require('circular-json')
 const fs = require('fs')
 const yargs = require('yargs');
 
-const {apiurl, setheader, sendAuthorizedGetRequest, logintokens, getEvent} = require('./api')
+let apiurl;
+
+const {setheader, sendAuthorizedGetRequest, getEvent, setApiUrl} = require('./api')
 
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -272,6 +274,9 @@ var args = yargs
 	.boolean('production')
 	.option('listen', {
 		default: '3000',
+	})
+	.option('apiurl', {
+		default: 'https://snaps-api.dropud.nu/',
 	}).argv;
 
 if (args.production) {
@@ -286,5 +291,9 @@ if (args.listen[0] === '/') {
 		fs.unlinkSync(listen);
 	} catch(e) {}
 }
+
+apiurl = args.apiurl;
+setApiUrl(apiurl);
+console.log(`Using API: ${apiurl}`);
 
 app.listen(args.listen, () => console.log("Listening on " + args.listen));
