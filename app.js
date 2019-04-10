@@ -63,7 +63,6 @@ app.post('/createaccount', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
 	if (username != "" && password != "") {
-		console.log("Trying to create user...")
 		createuser(username, password).then((body) => res.redirect('/login'));
 	}
 
@@ -74,7 +73,6 @@ function isLoggedIn(req){
 }
 
 function displayEvents(res, req){
-	console.log("display events called")
 	sendAuthorizedGetRequest("api/events/", req, res).then((response) => {
 		res.render('index.pug',{events:response.data});
 	});
@@ -201,7 +199,6 @@ app.get('/events/:eventID/join', (req, resu) =>{
 
 
 app.get('/events/:eventID/leave', (req, resu) =>{
-	console.log(req.body)
 	axios.post(apiurl + "api/events/" + req.params.eventID + '/leave/', {},{
 		headers: setheader(req)
 	}).then((res) => {
@@ -215,7 +212,6 @@ app.get('/events/:eventID/leave', (req, resu) =>{
 
 
 app.get('/events/:eventID/stop', (req, resu) =>{
-	console.log(req.body)
 	axios.post(apiurl + "api/events/" + req.params.eventID + '/stop/', {},{
 		headers: setheader(req)
 	}).then((res) => {
@@ -245,13 +241,11 @@ function login(uname, pass, res){
 }
 
 function createuser(uname, pass){
-	console.log(uname + pass)
 	return new Promise((resolve, reject) => {
 		axios.post(apiurl + "api/users/", {
 			username : uname,
 			password : pass
 		}).then((response) => {
-			console.log("CREATED USER!");
 			resolve(response.data);
 		})
 
