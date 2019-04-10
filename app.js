@@ -7,6 +7,7 @@ const axios = require('axios')
 const bodyParser = require('body-parser')
 const JSON = require('circular-json')
 const fs = require('fs')
+const yargs = require('yargs');
 
 const {apiurl, setheader, sendAuthorizedGetRequest, logintokens, getEvent} = require('./api')
 
@@ -266,22 +267,24 @@ function getUserID(req, res){
 	return sendAuthorizedGetRequest("api/users/me/", req, res).then((response) => response.data.id)
 }
 
-var listen, message;
-if (process.argv[2] === '--production') {
-	console.log('Running in production mode');
 
-	listen = process.argv[3];
+var args = yargs
+	.boolean('production')
+	.option('listen', {
+		default: '3000',
+	}).argv;
+
+if (args.production) {
+	console.log('Running in production mode');
 } else {
 	console.log('Running in dev mode');
-
 	app.use('/static', express.static('static'))
-	listen = 3000;
 }
 
-if (listen[0] === '/') {
+if (args.listen[0] === '/') {
 	try {
 		fs.unlinkSync(listen);
 	} catch(e) {}
 }
 
-app.listen(listen, () => console.log("Listening on " + listen));
+app.listen(args.listen, () => console.log("Listening on " + args.listen));
