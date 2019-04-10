@@ -274,7 +274,9 @@ if (process.argv[2] === '--production') {
 }
 
 if (listen[0] === '/') {
-	fs.unlinkSync(listen);
+	try {
+		fs.unlinkSync(listen);
+	} catch(e) {}
 }
 
 app.listen(listen, () => console.log("Listening on " + listen));
