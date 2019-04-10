@@ -1,7 +1,6 @@
 const express = require('express');
 var cookieParser = require('cookie-parser');
 const app = express();
-const port = 3000;
 const pug = require('pug');
 const http = require('http');
 const axios = require('axios')
@@ -14,7 +13,6 @@ const {apiurl, setheader, sendAuthorizedGetRequest, getID, logintokens, getEvent
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/static', express.static('public'))
 app.set('view engine', 'pug');
 
 app.get('/', (req, res) => {
@@ -263,4 +261,20 @@ function getUserID(req, res){
 	return sendAuthorizedGetRequest("api/users/me/", req, res).then((response) => response.data.id)
 }
 
-app.listen(port, () => console.log("Listening on port " + port + "!"));
+var listen, message;
+if (process.argv[2] === '--production') {
+	console.log('Running in production mode');
+
+	listen = process.argv[3];
+} else {
+	console.log('Running in dev mode');
+
+	app.use('/static', express.static('public'))
+	listen = 3000;
+}
+
+if (listen[0] === '/') {
+	fs.unlinkSync(listen);
+}
+
+app.listen(listen, () => console.log("Listening on " + listen));
