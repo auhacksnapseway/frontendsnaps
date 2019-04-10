@@ -36,13 +36,6 @@ app.get('/login', (req, res) => {
 	});
 })
 
-app.get('/styles/:file', (req, res) => {
-	fs.readFile('../styles/' + req.params.file, 'utf8', (err, contents) => {
-		if(err) console.error(err);
-		res.send(contents);
-	});
-})
-
 app.post('/login', (req, res) => {
 	let username = req.body.username;
 	let password = req.body.password;
