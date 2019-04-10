@@ -79,6 +79,6 @@ function getEvent(eventID, req) {
 }
 
 
-module.exports = {setheader, getID, sendAuthorizedGetRequest, logintokens,
+module.exports = {apiurl, setheader, getID, sendAuthorizedGetRequest, logintokens,
   getEvent};
 
