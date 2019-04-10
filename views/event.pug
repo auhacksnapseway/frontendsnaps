@@ -9,6 +9,8 @@ head
 		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js')
 body
 	div.container
+		if error
+			div.alert.alert-danger=error
 		h1(style="display:inline-block")=event.name
 		h3(style="display:inline-block; margin-left: 2rem")="(" + eventowner.username + ")"
 		<br/>

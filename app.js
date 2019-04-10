@@ -86,6 +86,10 @@ function displayEvents(res, req){
 
 
 app.get('/event/:eventID', (req,res) => {
+  var error = req.cookies.eventError;
+  if (error) {
+    res.clearCookie('eventError');
+  }
   getUserID(req, res).then(userId => {
 	getEvent(req.params.eventID, req).then(data => {
 	  let {event, drinks, owner} = data;
@@ -94,7 +98,8 @@ app.get('/event/:eventID', (req,res) => {
 		isJoined: event.users.some(u => u.id == userId),
 		isOwner: userId == event.owner,
 		eventowner: owner,
-		userId: userId
+		userId: userId,
+		error: error,
 	  });
 	});
   });
@@ -110,11 +115,15 @@ app.get('/events/:eventID/drink', (req, res) => {
 			headers: setheader(req)
 		}).then((resu) => {
 		  if (resu.status < 400)
-			console.error(resu)
+			console.error(`Got status from drink: ${resu.status}`)
 
 		  res.redirect('/event/'+ eventID)
 		}).catch((err) => {
-		  res.redirect('/event/'+ eventID);
+			var detail = err.response.data.detail;
+			if (detail) {
+				res.cookie('eventError', detail);
+			}
+		    res.redirect('/event/'+ eventID);
 		})
 	});
 })
