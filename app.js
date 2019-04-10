@@ -113,7 +113,9 @@ app.get('/events/:eventID/drink', (req, res) => {
 			console.error(resu)
 
 		  res.redirect('/event/'+ eventID)
-		}, console.error)
+		}).catch((err) => {
+		  res.redirect('/event/'+ eventID);
+		})
 	});
 })
 
