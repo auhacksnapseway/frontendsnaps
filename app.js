@@ -4,13 +4,12 @@ const app = express();
 const port = 3000;
 const pug = require('pug');
 const http = require('http');
-const apiurl = "http://snapsecounter.serveo.net/"
 const axios = require('axios')
 const bodyParser = require('body-parser')
 const JSON = require('circular-json')
 const fs = require('fs')
 
-const {setheader, sendAuthorizedGetRequest, getID, logintokens, getEvent} = require('./api')
+const {apiurl, setheader, sendAuthorizedGetRequest, getID, logintokens, getEvent} = require('./api')
 
 app.use(cookieParser());
 app.use(bodyParser.json());
