@@ -14,7 +14,7 @@ const {apiurl, setheader, sendAuthorizedGetRequest, getID, logintokens, getEvent
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'))
+app.use('/static', express.static('public'))
 app.set('view engine', 'pug');
 
 app.get('/', (req, res) => {
