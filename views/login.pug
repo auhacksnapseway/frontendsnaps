@@ -40,5 +40,7 @@ head
       input.form-control(name='password' type='password' placeholder='Password' required='required')
     .form-group
       button.btn.btn-primary.btn-block(type='submit') Log in
+    .form-group
+      button.btn.btn-primary.btn-block(type='submit', onclick="document.querySelector('[name=username]').value = 'Spectator'; document.querySelector('[name=password]').value = 'secret';") Spectate
   p.text-center
     a(href='/createaccount') Create an account!

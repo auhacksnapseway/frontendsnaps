@@ -15,13 +15,14 @@ body
 		h3(style="display:inline-block; margin-left: 2rem")="(" + eventowner.username + ")"
 		<br/>
 		a.btn.btn-primary.btn-md(type='button', href="/") Home
-		if isJoined && event.end_datetime == null
-			a.btn.btn-success.btn-md(type='button', href="/events/" + event.id + "/drink/") Cheers
-			a.btn.btn-danger.btn-md(type='button', href="/events/" + event.id + "/leave/") Leave
-		else if event.end_datetime == null
-			a.btn.btn-primary.btn-md(type='button', href="/events/" + event.id + "/join/") Join
-		if isOwner && event.end_datetime == null
-			a.btn.btn-danger.btn-md(type='button', href="/events/" + event.id + "/stop/") End event
+		if !isSpectator
+			if isJoined && event.end_datetime == null
+				a.btn.btn-success.btn-md(type='button', href="/events/" + event.id + "/drink/") Cheers
+				a.btn.btn-danger.btn-md(type='button', href="/events/" + event.id + "/leave/") Leave
+			else if event.end_datetime == null
+				a.btn.btn-primary.btn-md(type='button', href="/events/" + event.id + "/join/") Join
+			if isOwner && event.end_datetime == null
+				a.btn.btn-danger.btn-md(type='button', href="/events/" + event.id + "/stop/") End event
 		table.table.table-striped
 			thead
 				tr
