@@ -94,6 +94,7 @@ app.get('/event/:eventID', (req,res) => {
 		eventowner: owner,
 		userId: userId,
 		error: error,
+		isSpectator: userId === 62,
 	  });
 	});
   });
