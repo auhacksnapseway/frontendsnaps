@@ -14,7 +14,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=snaps.dropud.nu"
       - "traefik.frontend.rule=Host:snaps.dropud.nu"
-      - "traefik.port=8000"
+      - "traefik.port=3000"
       - "traefik.docker.network=web"
       - "traefik.domain=snaps.dropud.nu"
     container_name: snaps.dropud.nu
