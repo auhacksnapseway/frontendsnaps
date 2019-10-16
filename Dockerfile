@@ -7,4 +7,4 @@ COPY . /app
 
 RUN npm install
 
-CMD ["node", "app.js", "--apiurl", "https://api.snaps.dropud.nu/"]
+CMD ["node", "app.js", "--apiurl", "http://api.snaps.dropud.nu:8000/"]
