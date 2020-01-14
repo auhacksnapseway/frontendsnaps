@@ -1,4 +1,4 @@
-version: "3"
+version: "3.7"
 
 services:
   app:
@@ -6,19 +6,17 @@ services:
     user: node
     restart: always
     networks:
-      - web
+      - traefik
       - default
     expose:
-      - "3000"
+      - 3000
     labels:
-      - "traefik.enable=true"
-      - "traefik.backend=snaps.dropud.nu"
-      - "traefik.frontend.rule=Host:snaps.dropud.nu"
-      - "traefik.port=3000"
-      - "traefik.docker.network=web"
-      - "traefik.domain=snaps.dropud.nu"
+      - traefik.enable=true
+      - traefik.http.routers.snaps-dropud-nu.rule=Host(`snaps.dropud.nu`)
+      - traefik.http.routers.snaps-dropud-nu.tls.certResolver=le
+      - traefik.http.services.snaps-dropud-nu.loadbalancer.server.port=3000
     container_name: snaps.dropud.nu
 
 networks:
-  web:
+  traefik:
     external: true
